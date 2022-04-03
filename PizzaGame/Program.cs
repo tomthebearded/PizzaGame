@@ -15,9 +15,17 @@ namespace PizzaGame
                 .AddEnvironmentVariables()
                 .AddCommandLine(args)
                 .Build();
-            var maxNumberOfPizzas = Configuration.GetValue<int>("maxNumberOfPizzas");
-            var minNumberOfPizzas = Configuration.GetValue<int>("minNumberOfPizzas");
-            var minSelectableNumberOfPizzas = minNumberOfPizzas + 1;
+            var maxNumberOfPizzas = Configuration.GetValue<int?>("maxNumberOfPizzas");
+            var minNumberOfPizzas = Configuration.GetValue<int?>("minNumberOfPizzas");
+            var options = Configuration.GetSection("options").Get<int[]>();
+
+            if (!ValidationMethods.ConfigurationIsValid(options, maxNumberOfPizzas, minNumberOfPizzas))
+            {
+                Console.WriteLine("Game Configuration is invalid");
+                Environment.Exit(0);
+            }
+
+            var minSelectableNumberOfPizzas = minNumberOfPizzas.Value + 1;
             var playModeInputIsValid = false;
             var pizzaNumberInputIsValid = false;
             var selectedNumberOfPizzas = 0;
@@ -36,11 +44,11 @@ namespace PizzaGame
                     selectedGameMode = playModeInput;
             }
             while (!playModeInputIsValid);
-            Console.WriteLine($"If you want to play with a random number of pizzas press ENTER, otherwise type a number between {minSelectableNumberOfPizzas} & {maxNumberOfPizzas} and press ENTER");
+            Console.WriteLine($"If you want to play with a random number of pizzas press ENTER, otherwise type a number between {minSelectableNumberOfPizzas} & {maxNumberOfPizzas.Value} and press ENTER");
             do
             {
                 var pizzaNumberInput = Console.ReadLine().Trim();
-                var result = pizzaNumberInput.NumberOfPizzasIsValid(minSelectableNumberOfPizzas, maxNumberOfPizzas);
+                var result = pizzaNumberInput.NumberOfPizzasIsValid(minSelectableNumberOfPizzas, maxNumberOfPizzas.Value);
                 pizzaNumberInputIsValid = result.IsValid;
                 if (!pizzaNumberInputIsValid)
                     Console.WriteLine(result.ErroMessage);
@@ -49,7 +57,7 @@ namespace PizzaGame
 
             }
             while (!pizzaNumberInputIsValid);
-            var rules = new GameRulesModel(minNumberOfPizzas, selectedNumberOfPizzas, selectedGameMode);
+            var rules = new GameRulesModel(minNumberOfPizzas.Value, selectedNumberOfPizzas, selectedGameMode, options);
             var engine = new GameEngine(rules);
             do
             {
