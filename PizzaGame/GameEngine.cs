@@ -60,13 +60,21 @@ namespace PizzaGame
             Console.WriteLine($"{player} turn");
 
             if (lastPizza)
+            {
                 DisplayLoserMessage(player);
+                return;
+            }
 
             if (pizzasLeft == 1)
+            {
+                Console.WriteLine($"{player} skips the turn");
                 PVPTurn(random, !currentPlayer, pizzasLeft, true);
+                return;
+            }
 
             Console.WriteLine($"{player} has these options");
             var options = new List<int>(Rules.Options);
+            options.RemoveAll(x => x > pizzasLeft);
             if (previousOption.HasValue)
                 options.Remove(previousOption.Value);
             options.ForEach(x => Console.WriteLine(x));
@@ -82,10 +90,10 @@ namespace PizzaGame
             {
                 var option = int.Parse(input);
                 var outcome = pizzasLeft - option;
-                if (outcome >= 2)
-                    GoToNextTurn(outcome, player, option, () => PVPTurn(random, !currentPlayer, outcome, false, false, option));
-                else
+                if (outcome == 0)
                     DisplayLoserMessage(player);
+                else
+                    GoToNextTurn(outcome, player, option, () => PVPTurn(random, !currentPlayer, outcome, false, false, option));
             }
         }
 
@@ -103,16 +111,23 @@ namespace PizzaGame
                 DisplayAsciiPizzas(previousOption);
             var player = currentPlayer ? "Player" : "Computer";
             Console.WriteLine($"{player} turn");
-            Console.WriteLine($"{player} has these options");
-
 
             if (lastPizza)
+            {
                 DisplayLoserMessage(player);
+                return;
+            }
 
             if (pizzasLeft == 1)
+            {
+                Console.WriteLine($"{player} skips the turn");
                 PVCTurn(random, !currentPlayer, pizzasLeft, true);
+                return;
+            }
 
+            Console.WriteLine($"{player} has these options");
             var options = new List<int>(Rules.Options);
+            options.RemoveAll(x => x > pizzasLeft);
             if (previousOption.HasValue)
                 options.Remove(previousOption.Value);
             options.ForEach(x => Console.WriteLine(x));
@@ -130,10 +145,10 @@ namespace PizzaGame
                 {
                     var option = int.Parse(input);
                     var outcome = pizzasLeft - option;
-                    if (outcome >= 2)
-                        GoToNextTurn(outcome, player, option, () => PVCTurn(random, !currentPlayer, outcome, false, false, option));
-                    else
+                    if (outcome == 0)
                         DisplayLoserMessage(player);
+                    else
+                        GoToNextTurn(outcome, player, option, () => PVCTurn(random, !currentPlayer, outcome, false, false, option));
                 }
             }
             else
@@ -141,16 +156,22 @@ namespace PizzaGame
                 var i = random.Next(0, options.Count);
                 var option = options[i];
                 var outcome = pizzasLeft - option;
-                if (outcome >= 2)
+                if (outcome <= 0 && options.Count == 1)
+                {
+                    DisplayLoserMessage(player);
+                    return;
+                }
+                else if (outcome >= 2 || outcome == 1 && options.Count == 1)
                     GoToNextTurn(outcome, player, option, () => PVCTurn(random, !currentPlayer, outcome, false, false, option));
                 else
                 {
                     options.Remove(option);
+                    option = options[0];
                     outcome = pizzasLeft - options[0];
-                    if (outcome > 2)
-                        GoToNextTurn(outcome, player, option, () => PVCTurn(random, !currentPlayer, outcome, false, false, option));
-                    else
+                    if (outcome <= 0)
                         DisplayLoserMessage(player);
+                    else
+                        GoToNextTurn(outcome, player, option, () => PVCTurn(random, !currentPlayer, outcome, false, false, option));
                 }
             }
         }
@@ -171,32 +192,46 @@ namespace PizzaGame
             Console.WriteLine($"{player} turn");
 
             if (lastPizza)
+            {
+
                 DisplayLoserMessage(player);
+                return;
+            }
 
             if (pizzasLeft == 1)
+            {
+                Console.WriteLine($"{player} skips the turn");
                 AutoPlayTurn(random, !currentPlayer, pizzasLeft, true);
+                return;
+            }
+
 
             var options = new List<int>(Rules.Options);
+            options.RemoveAll(x => x > pizzasLeft);
             if (previousOption.HasValue)
                 options.Remove(previousOption.Value);
 
             Console.WriteLine($"{player} has these options");
             options.ForEach(x => Console.WriteLine(x));
-
             var i = random.Next(0, options.Count);
             var option = options[i];
-
             var outcome = pizzasLeft - option;
-            if (outcome >= 2)
+            if (outcome <= 0 && options.Count == 1)
+            {
+                DisplayLoserMessage(player);
+                return;
+            }
+            else if (outcome >= 2 || outcome == 1 && options.Count == 1)
                 GoToNextTurn(outcome, player, option, () => AutoPlayTurn(random, !currentPlayer, outcome, false, false, option));
             else
             {
                 options.Remove(option);
+                option = options[0];
                 outcome = pizzasLeft - options[0];
-                if (outcome > 2)
-                    GoToNextTurn(outcome, player, option, () => AutoPlayTurn(random, !currentPlayer, outcome, false, false, option));
-                else
+                if (outcome <= 0)
                     DisplayLoserMessage(player);
+                else
+                    GoToNextTurn(outcome, player, option, () => AutoPlayTurn(random, !currentPlayer, outcome, false, false, option));
             }
         }
 
