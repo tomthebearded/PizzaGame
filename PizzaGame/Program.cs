@@ -33,6 +33,15 @@ namespace PizzaGame
             var keepPlaying = true;
             Console.WriteLine(AsciiArt.skullAndPizza);
             Console.WriteLine("Welcome to PizzaGame");
+            Console.WriteLine("Rules:");
+            Console.WriteLine(" * Two players");
+            Console.WriteLine(" * On a table there is a pile of pizzas, the last one is poisoned");
+            Console.WriteLine(" * If a player eats the poisoned pizza loses");
+            Console.WriteLine(" * You can't skip your turn");
+            Console.WriteLine(" * In your turn you must eat a chosen number of pizzas from the top of the pile between the given options");
+            Console.WriteLine(" * You can't eat the same number of pizzas chosen by the previous player");
+            Console.WriteLine(" * If a player in his turn doesn't have any valid option must skip the turn, the other player must eat the poisoned pizza");
+
             Console.WriteLine($"If you want autoplay press 'A', if you want to play against the computer press 'C', if you want to play with another player press 'P'");
             do
             {
